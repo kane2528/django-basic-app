@@ -1,0 +1,36 @@
+services:
+  nginx:
+    build: ./nginx
+    container_name: nginx_cont
+    ports:
+      - "80:80"
+    depends_on:
+      - django_app
+    networks:
+      - django-net
+  django_app:
+    build: ./app
+    container_name: django_app
+    depends_on:
+      - db
+    environment:
+      DB_NAME: test_db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_HOST: db
+    networks:
+      - django-net
+  db:
+    image: mysql:latest
+    container_name: db_cont
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - django-net
+volumes:
+  mysql-data:
+networks:
+   django-net:
